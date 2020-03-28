@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/poketrivia/static/css/main.304c34db.chunk.css",
+    "main.js": "/poketrivia/static/js/main.d73a6d64.chunk.js",
+    "main.js.map": "/poketrivia/static/js/main.d73a6d64.chunk.js.map",
+    "runtime-main.js": "/poketrivia/static/js/runtime-main.3dc61d40.js",
+    "runtime-main.js.map": "/poketrivia/static/js/runtime-main.3dc61d40.js.map",
+    "static/css/2.36020323.chunk.css": "/poketrivia/static/css/2.36020323.chunk.css",
+    "static/js/2.f6c28717.chunk.js": "/poketrivia/static/js/2.f6c28717.chunk.js",
+    "static/js/2.f6c28717.chunk.js.map": "/poketrivia/static/js/2.f6c28717.chunk.js.map",
+    "index.html": "/poketrivia/index.html",
+    "precache-manifest.61635227048cafc0e247dcab28bc267e.js": "/poketrivia/precache-manifest.61635227048cafc0e247dcab28bc267e.js",
+    "service-worker.js": "/poketrivia/service-worker.js",
+    "static/css/2.36020323.chunk.css.map": "/poketrivia/static/css/2.36020323.chunk.css.map",
+    "static/css/main.304c34db.chunk.css.map": "/poketrivia/static/css/main.304c34db.chunk.css.map",
+    "static/js/2.f6c28717.chunk.js.LICENSE.txt": "/poketrivia/static/js/2.f6c28717.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.3dc61d40.js",
+    "static/css/2.36020323.chunk.css",
+    "static/js/2.f6c28717.chunk.js",
+    "static/css/main.304c34db.chunk.css",
+    "static/js/main.d73a6d64.chunk.js"
+  ]
+}
