@@ -1,4 +1,5 @@
 import Trivia from "./components/Trivia";
+import Modal from "./components/Modal";
 import { getPoke } from "./store/actions/actions";
 
 import React, { Component } from "react";
@@ -17,6 +18,7 @@ export class App extends Component {
           score={this.props.score}
           entry={this.props.entry}
         />
+        {this.props.modal.message && <Modal />}
       </div>
     );
   }
@@ -32,7 +34,8 @@ const mapStateToProps = state => {
   return {
     question: state.question,
     score: state.score,
-    entry: state.entry
+    entry: state.entry,
+    modal: { ...state.modal }
   };
 };
 
