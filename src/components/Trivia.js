@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { submitAnswer, getPoke } from "../store/actions/actions";
+import { submitAnswer, openModal } from "../store/actions/actions";
 
 export class Trivia extends Component {
   state = {
@@ -8,25 +8,46 @@ export class Trivia extends Component {
   };
 
   render() {
-    const { score, question, entry } = this.props;
+    const { score, entry } = this.props;
     return (
-      <div className="card small">
+      <div className="card small yellow darken-3">
         <div className="card-content">
           <span className="card-title">
-            <div className="left">Question {question}/10</div>
+            <div className="left">PokeTrivia</div>
             <div className="right-align">Score: {score}</div>
           </span>
-          <p className="center">{entry}</p>
+          <div className="center">
+            {entry ? (
+              <p>{entry}</p>
+            ) : (
+              <div className="preloader-wrapper big active">
+                <div className="spinner-layer spinner-red-only">
+                  <div className="circle-clipper left">
+                    <div className="circle"></div>
+                  </div>
+                  <div className="gap-patch">
+                    <div className="circle"></div>
+                  </div>
+                  <div className="circle-clipper right">
+                    <div className="circle"></div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         <div className="card-action">
           <form onSubmit={this.handleSubmit} className="center">
-            <label for="answer">Answer</label>
-            <input
-              onChange={this.handleChange}
-              value={this.state.value}
-              type="text"
-              id="answer"
-            ></input>
+            <div className="input-field">
+              <input
+                autoComplete="off"
+                onChange={this.handleChange}
+                value={this.state.value}
+                type="text"
+                id="answer"
+              ></input>
+              <label htmlFor="answer">Answer</label>
+            </div>
             <button className="btn red z-depth-0">Submit</button>
           </form>
         </div>
@@ -36,9 +57,8 @@ export class Trivia extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    console.log("Button clicked");
     this.props.submitAnswer(this.state.answer);
-    this.props.getPoke();
+    this.props.openModal();
     event.target.reset();
   };
 
@@ -54,7 +74,7 @@ const mapDispatchToProps = dispatch => {
     submitAnswer: answer => {
       dispatch(submitAnswer(answer));
     },
-    getPoke: () => dispatch(getPoke())
+    openModal: () => dispatch(openModal())
   };
 };
 
