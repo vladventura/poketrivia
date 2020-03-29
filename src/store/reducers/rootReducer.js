@@ -3,7 +3,7 @@ var initState = {
   answer: "",
   score: 0,
   question: 0,
-  modal: {}
+  modal: null
 };
 const cleanEntry = (flavorTextEntries, name) => {
   const ame = name.substr(1);

@@ -19,7 +19,7 @@ export class App extends Component {
           entry={this.props.entry}
           openModal={() => this.props.openModal()}
         />
-        {this.props.modal.message && (
+        {this.props.modal && (
           <Modal
             getPoke={() => this.props.getPoke()}
             closeModal={() => this.props.closeModal()}
@@ -41,10 +41,8 @@ const mapDispatchToProps = dispatch => {
 
 const mapStateToProps = state => {
   return {
-    question: state.question,
-    score: state.score,
-    entry: state.entry,
-    modal: { ...state.modal }
+    ...state,
+    answer: null
   };
 };
 
