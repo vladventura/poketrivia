@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { closeModal, getPoke } from "../store/actions/actions";
 import M from "materialize-css";
+import Spinner from "./Spinner";
 
 class Modal extends Component {
   options = {
@@ -33,10 +34,6 @@ class Modal extends Component {
           id="modal1"
           className="modal bottom-sheet"
         >
-          {/* If you want Bottom Sheet Modal then add 
-                        bottom-sheet class to the "modal" div
-                        If you want Fixed Footer Modal then add
-                        modal-fixed-footer to the "modal" div*/}
           <div className={"modal-content center " + color}>
             <h4 className="center">
               {message && pokeName
@@ -50,23 +47,7 @@ class Modal extends Component {
               src={pokeSpriteUrl}
             ></img>
             <div>
-              {pokeDesc ? (
-                <p>{pokeDesc}</p>
-              ) : (
-                <div className="preloader-wrapper big active">
-                  <div className="spinner-layer spinner-red-only">
-                    <div className="circle-clipper left">
-                      <div className="circle"></div>
-                    </div>
-                    <div className="gap-patch">
-                      <div className="circle"></div>
-                    </div>
-                    <div className="circle-clipper right">
-                      <div className="circle"></div>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {pokeDesc ? <p>{pokeDesc}</p> : <Spinner color="yellow" />}
             </div>
           </div>
           <div className={color && "modal-footer " + color}>
