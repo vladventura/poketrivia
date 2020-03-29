@@ -1,6 +1,6 @@
 import Trivia from "./components/Trivia";
 import Modal from "./components/Modal";
-import { getPoke } from "./store/actions/actions";
+import { getPoke, closeModal } from "./store/actions/actions";
 
 import React, { Component } from "react";
 import { connect } from "react-redux";
@@ -18,7 +18,13 @@ export class App extends Component {
           score={this.props.score}
           entry={this.props.entry}
         />
-        {this.props.modal.message && <Modal />}
+        {this.props.modal.message && (
+          <Modal
+            getPoke={() => this.props.getPoke()}
+            closeModal={() => this.props.closeModal()}
+            modal={this.props.modal}
+          />
+        )}
       </div>
     );
   }
@@ -26,7 +32,8 @@ export class App extends Component {
 
 const mapDispatchToProps = dispatch => {
   return {
-    getPoke: () => dispatch(getPoke())
+    getPoke: () => dispatch(getPoke()),
+    closeModal: () => dispatch(closeModal())
   };
 };
 

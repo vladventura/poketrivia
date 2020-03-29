@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
-import { closeModal, getPoke } from "../store/actions/actions";
 import M from "materialize-css";
 import Spinner from "./Spinner";
 
@@ -24,7 +22,13 @@ class Modal extends Component {
   }
   render() {
     console.log("Modal props", this.props);
-    const { message, color, pokeName, pokeDesc, pokeSpriteUrl } = this.props;
+    const {
+      message,
+      color,
+      pokeName,
+      pokeDesc,
+      pokeSpriteUrl
+    } = this.props.modal;
     return (
       <div>
         <div
@@ -65,17 +69,4 @@ class Modal extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    ...state.modal
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    closeModal: () => dispatch(closeModal()),
-    getPoke: () => dispatch(getPoke())
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Modal);
+export default Modal;
