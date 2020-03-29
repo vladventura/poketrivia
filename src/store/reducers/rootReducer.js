@@ -3,7 +3,7 @@ var initState = {
   answer: "",
   score: 0,
   question: 0,
-  modal: {}
+  modal: null
 };
 const cleanEntry = (flavorTextEntries, name) => {
   const ame = name.substr(1);
@@ -18,8 +18,7 @@ const rootReducer = (state = initState, action) => {
       return {
         ...state,
         modal: {
-          message: action.payload.message,
-          color: action.payload.color
+          ...action.payload
         },
         score
       };
@@ -27,25 +26,20 @@ const rootReducer = (state = initState, action) => {
       return {
         ...state,
         modal: {
-          message: action.payload.message,
-          color: action.payload.color
+          ...action.payload
         }
       };
     case "GET_POKE":
       var question = state.question + 1;
       const { name } = action.payload;
-      const entry = cleanEntry(
-        action.payload.flavor_text_entries.find(entry => {
-          return entry.language.name === "en";
-        }).flavor_text,
-        name
-      );
+      const natural = action.payload.flavor_text_entries.find(entry => {
+        return entry.language.name === "en";
+      }).flavor_text;
+      const entry = cleanEntry(natural, name);
       return {
         ...state,
         answer: name,
-        natural: action.payload.flavor_text_entries.find(entry => {
-          return entry.language.name === "en";
-        }).flavor_text,
+        natural,
         entry,
         question
       };
@@ -59,11 +53,8 @@ const rootReducer = (state = initState, action) => {
         ...state,
         entry: "",
         modal: {
-          message: state.modal.message,
-          color: state.modal.color,
-          pokeName: action.payload.pokeName,
-          pokeDesc: action.payload.pokeDesc,
-          pokeSpriteUrl: action.payload.pokeSpriteUrl
+          ...state.modal,
+          ...action.payload
         }
       };
     default:
