@@ -61,7 +61,7 @@ export const openModal = () => {
   return (dispatch, getState) => {
     const currentState = getState();
     const url = api + pokemon + currentState.answer;
-
+    const shinyEncounter = Math.abs(Math.random() - 1.0 / 1365.33) < 0.1;
     return axios
       .get(url)
       .then(res => {
@@ -71,10 +71,9 @@ export const openModal = () => {
           payload: {
             pokeName: currentState.answer,
             pokeDesc: currentState.natural,
-            pokeSpriteUrl:
-              Math.random() === 1.0 / 1365.33
-                ? poke.sprites.front_shiny
-                : poke.sprites.front_default
+            pokeSpriteUrl: shinyEncounter
+              ? poke.sprites.front_shiny
+              : poke.sprites.front_default
           }
         };
         dispatch(action);
