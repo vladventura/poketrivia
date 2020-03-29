@@ -5,7 +5,7 @@ import Input from "./Input";
 import Top from "./Top";
 
 import { connect } from "react-redux";
-import { submitAnswer, openModal } from "../store/actions/actions";
+import { submitAnswer } from "../store/actions/actions";
 
 export class Trivia extends Component {
   state = {
@@ -51,8 +51,7 @@ const mapDispatchToProps = dispatch => {
   return {
     submitAnswer: answer => {
       dispatch(submitAnswer(answer));
-    },
-    openModal: () => dispatch(openModal())
+    }
   };
 };
 
