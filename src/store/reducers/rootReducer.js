@@ -5,12 +5,7 @@ var initState = {
   question: 0,
   modal: null
 };
-const cleanEntry = (flavorTextEntries, name) => {
-  const ame = name.substr(1);
-  const regex = new RegExp(ame, "g");
-  const replacedFTE = flavorTextEntries.replace(regex, "____ ");
-  return replacedFTE;
-};
+
 const rootReducer = (state = initState, action) => {
   switch (action.type) {
     case "ANSWER_CORRECT":
@@ -30,12 +25,7 @@ const rootReducer = (state = initState, action) => {
         }
       };
     case "GET_POKE":
-      var question = state.question + 1;
-      const { name } = action.payload;
-      const natural = action.payload.flavor_text_entries.find(entry => {
-        return entry.language.name === "en";
-      }).flavor_text;
-      const entry = cleanEntry(natural, name);
+      const { name, natural, entry, question } = action.payload;
       return {
         ...state,
         answer: name,

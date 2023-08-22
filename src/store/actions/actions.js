@@ -4,6 +4,16 @@ const api = "https://pokeapi.co/api/v2/";
 const pokeSpecies = "pokemon-species/";
 const pokemon = "pokemon/";
 
+const unescape = (str) => str.replace("\n", " ").replace("\f", " ");
+
+const cleanEntry = (flavorTextEntries, name) => {
+
+  const ame = name.substr(1);
+  const regex = new RegExp(ame, "gi");
+  const replacedFTE = flavorTextEntries.replace(regex, "*** ");
+  return replacedFTE.toString();
+};
+
 export const submitAnswer = answer => {
   return (dispatch, getState) => {
     const currentState = getState();
@@ -43,9 +53,20 @@ export const getPoke = () => {
     return axios
       .get(url)
       .then(response => {
+        let state = getState();
+        let question = state.question + 1;
+        const { name, flavor_text_entries } = response.data;
+        const natural = unescape(flavor_text_entries.find(e => e.language.name === "en").flavor_text);
+        const entry = cleanEntry(natural, name);
+
         dispatch({
           type: "GET_POKE",
-          payload: response.data
+          payload: {
+            name,
+            natural,
+            entry,
+            question
+          }
         });
       })
       .catch(error => {
