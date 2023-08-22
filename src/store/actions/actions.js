@@ -33,7 +33,6 @@ export const submitAnswer = answer => {
       action.payload.message = "Answer is incorrect!";
       action.payload.color = "red";
     }
-    console.log("Action is ", action);
     dispatch(action);
   };
 };
@@ -41,7 +40,7 @@ export const submitAnswer = answer => {
 function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 /** Literally from 1 to 807 because PokeAPI hasn't added SwSh stuff **/

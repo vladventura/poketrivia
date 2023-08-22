@@ -21,7 +21,6 @@ class Modal extends Component {
     instance.open();
   }
   render() {
-    console.log("Modal props", this.props);
     const {
       message,
       color,
