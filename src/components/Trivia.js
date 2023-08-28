@@ -9,17 +9,21 @@ import { submitAnswer } from "../store/actions/actions";
 
 export class Trivia extends Component {
   state = {
-    answer: ""
+    answer: "",
+    hintUsed: false,
   };
 
   render() {
-    const { score, entry } = this.props;
+    const { score, entry, hintText } = this.props;
     return (
       <div className="card small yellow darken-3">
         <Top score={score} />
         <div className="card-content">
           <div className="center">
             {entry ? <p>{entry}</p> : <Spinner color="red" />}
+            <div className="hints">
+              <p>{this.state.hintUsed ? hintText : ""}</p>
+            </div>
           </div>
         </div>
         <div className="card-action">
@@ -27,6 +31,8 @@ export class Trivia extends Component {
             value={this.state.value}
             handleChange={this.handleChange}
             handleSubmit={this.handleSubmit}
+            handleHint={this.handleHint}
+            showHint={!this.state.hintUsed}
           />
         </div>
       </div>
@@ -38,6 +44,9 @@ export class Trivia extends Component {
     this.props.submitAnswer(this.state.answer);
     this.props.openModal();
     event.target.reset();
+    this.setState({
+      hintUsed: false
+    })
   };
 
   handleChange = event => {
@@ -45,6 +54,13 @@ export class Trivia extends Component {
       answer: event.target.value
     });
   };
+
+  handleHint = event => {
+    event.preventDefault();
+    this.setState({
+      hintUsed: true
+    });
+  }
 }
 
 const mapDispatchToProps = dispatch => {

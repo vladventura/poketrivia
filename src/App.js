@@ -17,6 +17,7 @@ export class App extends Component {
           question={this.props.question}
           score={this.props.score}
           entry={this.props.entry}
+          hintText={this.props.hintText}
           openModal={() => this.props.openModal()}
         />
         {this.props.modal && (

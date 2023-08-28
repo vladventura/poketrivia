@@ -5,35 +5,30 @@ const initState = {
   question: 0,
   modal: null,
   alreadyAnswered: [],
+  hintText: "",
 };
 
 const rootReducer = (state = initState, action) => {
   switch (action.type) {
-    case "ANSWER_CORRECT":
-      const score = state.score + 1;
+    case "SUBMIT_ANSWER":
+      const { modalInfo, score } = action.payload;
       return {
         ...state,
         modal: {
-          ...action.payload
+          ...modalInfo
         },
         score
       };
-    case "ANSWER_INCORRECT":
-      return {
-        ...state,
-        modal: {
-          ...action.payload
-        }
-      };
     case "GET_POKE":
-      const { name, natural, entry, question, alreadyAnswered } = action.payload;
+      const { name, natural, entry, question, alreadyAnswered, hintText } = action.payload;
       return {
         ...state,
         answer: name,
         natural,
         entry,
         question,
-        alreadyAnswered
+        alreadyAnswered,
+        hintText
       };
     case "CLOSE_MODAL":
       return {

@@ -15,28 +15,51 @@ const cleanEntry = (flavorTextEntries, name) => {
   return replacedFTE.toString();
 };
 
-export const submitAnswer = answer => {
+export const submitAnswer = (answer, usedHint = false) => {
   return (dispatch, getState) => {
     const currentState = getState();
-    var action = {
-      type: "",
+    let action = {
+      type: "SUBMIT_ANSWER",
       payload: {
-        message: "",
-        color: ""
+        modalInfo: {
+          message: "",
+          color: ""
+        },
+        score: currentState.score,
       }
     };
+    let newScore = action.payload.score;
     if (currentState.answer === answer.toLowerCase()) {
-      action.type = "ANSWER_CORRECT";
-      action.payload.message = "Answer is correct!";
-      action.payload.color = "green";
+      action.payload.modalInfo.message = "Answer is correct!";
+      action.payload.modalInfo.color = "green";
+      newScore = action.payload.score + 5 - (usedHint? 0 : 2);
     } else {
-      action.type = "ANSWER_INCORRECT";
-      action.payload.message = "Answer is incorrect!";
-      action.payload.color = "red";
+      action.payload.modalInfo.message = "Answer is incorrect!";
+      action.payload.modalInfo.color = "red";
+      newScore = action.payload.score + 3 - (usedHint? 0 : 2);
     }
+    action.payload.score = newScore;
     dispatch(action);
   };
 };
+
+const genNameMap = {
+  "generation-i": "Gen 1",
+  "generation-ii": "Gen 2",
+  "generation-iii": "Gen 3",
+  "generation-iv": "Gen 4",
+  "generation-v": "Gen 5",
+  "generation-vi": "Gen 6",
+  "generation-vii": "Gen 7",
+  "generation-viii": "Gen 8",
+  "generation-ix": "Gen 9",
+};
+
+export const useHint = () => {
+  return (dispatch, getState) => {
+    
+  }
+}
 
 export const getPoke = () => {
   return async (dispatch, getState) => {
@@ -56,9 +79,10 @@ export const getPoke = () => {
       .then(response => {
         let state = getState();
         let question = state.question + 1;
-        const { name, flavor_text_entries } = response.data;
+        const { name, flavor_text_entries, generation, color } = response.data;
         const natural = unescape(flavor_text_entries.find(e => e.language.name === "en").flavor_text);
         const entry = cleanEntry(natural, name);
+        const hintText = `It is a Pokemon from ${genNameMap[generation.name]}, colored ${color.name}`;
 
         dispatch({
           type: "GET_POKE",
@@ -67,7 +91,8 @@ export const getPoke = () => {
             natural,
             entry,
             question,
-            alreadyAnswered: aa
+            alreadyAnswered: aa,
+            hintText,
           }
         });
       })
