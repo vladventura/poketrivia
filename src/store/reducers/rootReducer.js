@@ -6,6 +6,7 @@ const initState = {
   modal: null,
   alreadyAnswered: [],
   hintText: "",
+  id: 0,
 };
 
 const rootReducer = (state = initState, action) => {
@@ -20,15 +21,9 @@ const rootReducer = (state = initState, action) => {
         score
       };
     case "GET_POKE":
-      const { name, natural, entry, question, alreadyAnswered, hintText } = action.payload;
       return {
         ...state,
-        answer: name,
-        natural,
-        entry,
-        question,
-        alreadyAnswered,
-        hintText
+        ...action.payload,
       };
     case "CLOSE_MODAL":
       return {

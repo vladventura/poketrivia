@@ -32,7 +32,7 @@ export const submitAnswer = (answer, usedHint = false) => {
     if (currentState.answer === answer.toLowerCase()) {
       action.payload.modalInfo.message = "Answer is correct!";
       action.payload.modalInfo.color = "green";
-      newScore = action.payload.score + 5 - (usedHint? 0 : 2);
+      newScore = action.payload.score + 5 - (usedHint? 2 :0);
     } else {
       action.payload.modalInfo.message = "Answer is incorrect!";
       action.payload.modalInfo.color = "red";
@@ -79,7 +79,8 @@ export const getPoke = () => {
       .then(response => {
         let state = getState();
         let question = state.question + 1;
-        const { name, flavor_text_entries, generation, color } = response.data;
+        const { name, flavor_text_entries, generation, color, id } = response.data;
+        console.log(response.data);
         const natural = unescape(flavor_text_entries.find(e => e.language.name === "en").flavor_text);
         const entry = cleanEntry(natural, name);
         const hintText = `It is a Pokemon from ${genNameMap[generation.name]}, colored ${color.name}`;
@@ -87,12 +88,13 @@ export const getPoke = () => {
         dispatch({
           type: "GET_POKE",
           payload: {
-            name,
+            answer: name,
+            alreadyAnswered: aa,
             natural,
             entry,
             question,
-            alreadyAnswered: aa,
             hintText,
+            id
           }
         });
       })
@@ -108,7 +110,7 @@ export const getPoke = () => {
 export const openModal = () => {
   return (dispatch, getState) => {
     const currentState = getState();
-    const url = api + pokemon + currentState.answer;
+    const url = api + pokemon + currentState.id;
     const shinyEncounter = Math.abs(Math.random() - 1.0 / 1365.33) < 0.1;
     return axios
       .get(url)
