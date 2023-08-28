@@ -1,4 +1,5 @@
 import axios from "axios";
+import { shuffle } from "../../helpers/randomUtils";
 
 const api = "https://pokeapi.co/api/v2/";
 const pokeSpecies = "pokemon-species/";
@@ -37,17 +38,18 @@ export const submitAnswer = answer => {
   };
 };
 
-function getRandomIntInclusive(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-/** Literally from 1 to 807 because PokeAPI hasn't added SwSh stuff **/
-
 export const getPoke = () => {
-  const randomPoke = getRandomIntInclusive(1, 807);
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
+    const { alreadyAnswered } = getState();
+    let aa = [...alreadyAnswered];
+    if (aa.length === 0) {
+      /** Literally from 1 to 807 because PokeAPI hasn't added SwSh stuff **/
+      for (let x = 0; x < 808; x++) {
+        aa.push(x);
+      }
+      aa = shuffle(aa);
+    }
+    let randomPoke = aa.shift();
     const url = api + pokeSpecies + randomPoke;
     return axios
       .get(url)
@@ -64,7 +66,8 @@ export const getPoke = () => {
             name,
             natural,
             entry,
-            question
+            question,
+            alreadyAnswered: aa
           }
         });
       })
