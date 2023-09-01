@@ -32,11 +32,11 @@ export const submitAnswer = (answer, usedHint = false) => {
     if (currentState.answer === answer.toLowerCase()) {
       action.payload.modalInfo.message = "Answer is correct!";
       action.payload.modalInfo.color = "green";
-      newScore = action.payload.score + 5 - (usedHint? 2 :0);
+      newScore = action.payload.score + 5 - (usedHint ? 2 : 0);
     } else {
       action.payload.modalInfo.message = "Answer is incorrect!";
       action.payload.modalInfo.color = "red";
-      newScore = action.payload.score + 3 - (usedHint? 0 : 2);
+      newScore = action.payload.score + 3 - (usedHint ? 0 : 2);
     }
     action.payload.score = newScore;
     dispatch(action);
@@ -57,13 +57,13 @@ const genNameMap = {
 
 export const useHint = () => {
   return (dispatch, getState) => {
-    
+
   }
 }
 
 export const getPoke = () => {
   return async (dispatch, getState) => {
-    const { alreadyAnswered } = getState();
+    const { alreadyAnswered, question } = getState();
     let aa = [...alreadyAnswered];
     if (aa.length === 0) {
       /** Literally from 1 to 807 because PokeAPI hasn't added SwSh stuff **/
@@ -72,38 +72,39 @@ export const getPoke = () => {
       }
       aa = shuffle(aa);
     }
-    let randomPoke = aa.shift();
+    const randomPoke = aa.shift();
     const url = api + pokeSpecies + randomPoke;
-    return axios
-      .get(url)
-      .then(response => {
-        let state = getState();
-        let question = state.question + 1;
-        const { name, flavor_text_entries, generation, color, id } = response.data;
-        console.log(response.data);
-        const natural = unescape(flavor_text_entries.find(e => e.language.name === "en").flavor_text);
-        const entry = cleanEntry(natural, name);
-        const hintText = `It is a Pokemon from ${genNameMap[generation.name]}, colored ${color.name}`;
 
-        dispatch({
-          type: "GET_POKE",
-          payload: {
-            answer: name,
-            alreadyAnswered: aa,
-            natural,
-            entry,
-            question,
-            hintText,
-            id
-          }
-        });
-      })
-      .catch(error => {
-        dispatch({
-          type: "GET_POKE_ERROR",
-          error
-        });
+    let response = {};
+
+    try {
+      response = await axios.get(url);
+    } catch (ex) {
+      dispatch({
+        type: "GET_POKE_ERROR",
+        error: ex
       });
+      return;
+    }
+
+    const newQuestionValue = question + 1;
+    const { name, flavor_text_entries, generation, color, id } = response.data;
+    console.log(response.data);
+    const natural = unescape(flavor_text_entries.find(e => e.language.name === "en").flavor_text);
+    const entry = cleanEntry(natural, name);
+    const hintText = `It is a Pokemon from ${genNameMap[generation.name]}, colored ${color.name}`;
+    dispatch({
+      type: "GET_POKE",
+      payload: {
+        answer: name,
+        alreadyAnswered: aa,
+        natural,
+        entry,
+        newQuestionValue,
+        hintText,
+        id
+      }
+    });
   };
 };
 
