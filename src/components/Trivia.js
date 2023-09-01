@@ -41,7 +41,7 @@ export class Trivia extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    this.props.submitAnswer(this.state.answer);
+    this.props.submitAnswer(this.state.answer, this.state.hintUsed);
     this.props.openModal();
     event.target.reset();
     this.setState({
@@ -65,8 +65,8 @@ export class Trivia extends Component {
 
 const mapDispatchToProps = dispatch => {
   return {
-    submitAnswer: answer => {
-      dispatch(submitAnswer(answer));
+    submitAnswer: (answer, hintUsed) => {
+      dispatch(submitAnswer(answer, hintUsed));
     }
   };
 };
