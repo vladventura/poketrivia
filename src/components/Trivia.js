@@ -28,7 +28,7 @@ export class Trivia extends Component {
         </div>
         <div className="card-action">
           <Input
-            value={this.state.value}
+            value={this.state.answer}
             handleChange={this.handleChange}
             handleSubmit={this.handleSubmit}
             handleHint={this.handleHint}
@@ -45,7 +45,8 @@ export class Trivia extends Component {
     this.props.openModal();
     event.target.reset();
     this.setState({
-      hintUsed: false
+      answer: "",
+      hintUsed: false,
     })
   };
 
