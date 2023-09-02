@@ -1,6 +1,8 @@
 const initState = {
   entry: "",
   answer: "",
+  natural: "",
+  familyTree: [],
   score: 0,
   question: 0,
   modal: null,

@@ -1,47 +1,10 @@
 import axios from "axios";
 import { shuffle } from "../../helpers/randomUtils";
+import { keyExists, load, save } from "../../helpers/localStorageManager";
 
 const api = "https://pokeapi.co/api/v2/";
 const pokeSpecies = "pokemon-species/";
 const pokemon = "pokemon/";
-
-const unescape = (str) => str.replace("\n", " ").replace("\f", " ");
-
-const cleanEntry = (flavorTextEntries, name) => {
-
-  const ame = name.substr(1);
-  const regex = new RegExp(ame, "gi");
-  const replacedFTE = flavorTextEntries.replace(regex, "*** ");
-  return replacedFTE.toString();
-};
-
-export const submitAnswer = (answer, usedHint = false) => {
-  return (dispatch, getState) => {
-    const currentState = getState();
-    let action = {
-      type: "SUBMIT_ANSWER",
-      payload: {
-        modalInfo: {
-          message: "",
-          color: ""
-        },
-        score: currentState.score,
-      }
-    };
-    let newScore = action.payload.score;
-    if (currentState.answer === answer.toLowerCase()) {
-      action.payload.modalInfo.message = "Answer is correct!";
-      action.payload.modalInfo.color = "green";
-      newScore = action.payload.score + 5 - (usedHint ? 2 : 0);
-    } else {
-      action.payload.modalInfo.message = "Answer is incorrect!";
-      action.payload.modalInfo.color = "red";
-      newScore = action.payload.score + 3 - (usedHint ? 0 : 2);
-    }
-    action.payload.score = newScore;
-    dispatch(action);
-  };
-};
 
 const genNameMap = {
   "generation-i": "Gen 1",
@@ -55,11 +18,58 @@ const genNameMap = {
   "generation-ix": "Gen 9",
 };
 
-export const useHint = () => {
-  return (dispatch, getState) => {
+const unescape = (str) => str.replace("\n", " ").replace("\f", " ");
 
-  }
-}
+const cleanEntry = (flavorTextEntries, name = "") => {
+  const regex = new RegExp(name, "gi");
+  const replacedFTE = flavorTextEntries.replace(regex, name[0].toUpperCase() + "***");
+  return replacedFTE.toString();
+};
+
+// Inorder traversal of species tree
+const getRestOfFamilyTree = (chain) => {
+  if (!chain) return [];
+  const tempTree = [chain.species.name];
+  chain.evolves_to.forEach(children => {
+    tempTree.push(...getRestOfFamilyTree(children));
+  });
+  return tempTree;
+};
+
+export const submitAnswer = (ans, usedHint = false) => {
+  return (dispatch, getState) => {
+    const { answer, score, familyTree } = getState();
+    const realAnswer = answer.toLowerCase().replace("-", " ").replace(".", " ");
+    const userAnswered = ans.toLowerCase();
+    let action = {
+      type: "SUBMIT_ANSWER",
+      payload: {
+        modalInfo: {
+          message: "",
+          color: ""
+        },
+        score,
+      }
+    };
+    let newScore = action.payload.score;
+    if (realAnswer === userAnswered.replace("-", " ").replace(".", " ")) {
+      action.payload.modalInfo.message = "Answer is correct!";
+      action.payload.modalInfo.color = "green";
+      newScore = action.payload.score + 5 - (usedHint ? 2 : 0);
+    } else if (familyTree.includes(userAnswered)) {
+      action.payload.modalInfo.message = "Partial answer!";
+      action.payload.modalInfo.color = "amber";
+      newScore = action.payload.score + 4 - (usedHint ? 2 : 0);
+    }
+    else {
+      action.payload.modalInfo.message = "Answer is incorrect!";
+      action.payload.modalInfo.color = "red";
+      newScore = action.payload.score + 3 - (usedHint ? 2 : 0);
+    }
+    action.payload.score = newScore;
+    dispatch(action);
+  };
+};
 
 export const getPoke = () => {
   return async (dispatch, getState) => {
@@ -73,12 +83,24 @@ export const getPoke = () => {
       aa = shuffle(aa);
     }
     const randomPoke = aa.shift();
-    const url = api + pokeSpecies + randomPoke;
+    const pokemonSpeciesUrl = api + pokeSpecies + randomPoke;
 
-    let response = {};
+    let responses = {
+      "pokemon-species": {},
+      "evolution-chain": {}
+    };
 
     try {
-      response = await axios.get(url);
+      if (keyExists(randomPoke)) {
+        responses = load(randomPoke);
+      } else {
+        const { id, name, color, generation, flavor_text_entries, evolution_chain } = (await axios.get(pokemonSpeciesUrl)).data;
+        console.log(name, evolution_chain, id);
+        const { chain } = (await axios.get(evolution_chain.url)).data;
+        responses["pokemon-species"] = { id, name, color, generation, flavor_text: unescape(flavor_text_entries.find(e => e.language.name === "en").flavor_text), evolution_chain };
+        responses["evolution-chain"] = getRestOfFamilyTree(chain).filter(e => e.toLowerCase() !== name).map(e => e);
+        save(randomPoke, responses);
+      }
     } catch (ex) {
       dispatch({
         type: "GET_POKE_ERROR",
@@ -86,19 +108,22 @@ export const getPoke = () => {
       });
       return;
     }
+    console.log(responses["pokemon-species"])
 
     const newQuestionValue = question + 1;
-    const { name, flavor_text_entries, generation, color, id } = response.data;
-    console.log(response.data);
-    const natural = unescape(flavor_text_entries.find(e => e.language.name === "en").flavor_text);
-    const entry = cleanEntry(natural, name);
+    const { flavor_text, generation, color, id } = responses["pokemon-species"];
+    const name = responses["pokemon-species"].name.toLowerCase();
+    const familyTree = responses["evolution-chain"];
+    const entry = cleanEntry(flavor_text, name);
     const hintText = `It is a Pokemon from ${genNameMap[generation.name]}, colored ${color.name}`;
+
     dispatch({
       type: "GET_POKE",
       payload: {
         answer: name,
         alreadyAnswered: aa,
-        natural,
+        natural: flavor_text,
+        familyTree,
         entry,
         newQuestionValue,
         hintText,
@@ -109,7 +134,7 @@ export const getPoke = () => {
 };
 
 export const openModal = () => {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const currentState = getState();
     const url = api + pokemon + currentState.id;
     const shinyEncounter = Math.abs(Math.random() - 1.0 / 1365.33) < 0.1;
