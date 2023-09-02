@@ -43,7 +43,6 @@ const mapDispatchToProps = dispatch => {
 const mapStateToProps = state => {
   return {
     ...state,
-    answer: null
   };
 };
 
